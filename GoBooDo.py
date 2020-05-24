@@ -51,7 +51,8 @@ class  GoBooDo:
 
     def resethead(self):
         try:
-            req = requests.get("https://google."+self.country,verify=False)
+            req = requests.get("https://google."+self.country,verify=False,
+                    timeout=5)
             self.head = {
                 'Host': 'books.google.'+self.country,
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:53.0) Gecko/20100101 Firefox/53.00',
@@ -66,7 +67,11 @@ class  GoBooDo:
 
     def getProxy(self):
         prox =  random.choice(self.plist)
-        return prox.strip()
+        return prox
+
+    def removeProxy(self, prox):
+        self.plist = [p for p in self.plist if p != prox]
+        print(f'Removed proxy {prox} from proxy list',)
 
     def createPageDict(self,jsonResponse):
         for pageData in jsonResponse[0]['page']:
@@ -77,7 +82,8 @@ class  GoBooDo:
 
     def getInitialData(self):
         initUrl = "https://books.google." + self.country + "/books?id=" + self.id + "&printsec=frontcover"
-        pageData = requests.get(initUrl, headers=self.head, verify=False)
+        pageData = requests.get(initUrl, headers=self.head, verify=False,
+                timeout=5)
         soup = BeautifulSoup(pageData.content, "html5lib")
         self.name = soup.findAll("title")[0].contents[0]
         print(f'Downloading {self.name[:-15]}')
@@ -123,23 +129,28 @@ class  GoBooDo:
     def fetchPageLinks(self,proxy=None):
         self.resethead()
         if(proxy):
-            link = self.getProxy()
+            prox = self.getProxy()
+            proxy = prox.strip()
             proxyDict = {
-                "http": 'http://'+link,
-                "https": 'https://'+link,
+                "http": 'http://'+proxy,
+                "https": 'https://'+proxy,
             }
             print(f'Using proxy {proxy} for the url of page {self.pageList[0]}',)
             try:
                 self.b_url = "https://books.google."+self.country+"/books?id=" + str(self.id) + "&pg=" +\
                              str(self.pageList[0]) + "&jscmd=click3"
-                pageData = requests.get(self.b_url, headers=self.head,proxies=proxyDict,verify=False)
-            except:
+                pageData = requests.get(self.b_url,
+                        headers=self.head,proxies=proxyDict,verify=False,
+                        timeout=1)
+            except Exception as e:
                 print('Could not connect with this proxy')
+                self.removeProxy(prox)
             return pageData.json()
         else:
             self.b_url = "https://books.google."+self.country+"/books?id="+str(self.id)+"&pg="+ str(self.pageList[0]) \
                          +"&jscmd=click3"
-            pageData = requests.get(self.b_url, headers=self.head,verify=False)
+            pageData = requests.get(self.b_url, headers=self.head,verify=False,
+                    timeout=5)
             return pageData.json()
 
     def processBook(self):
@@ -171,6 +182,8 @@ class  GoBooDo:
                     interimData = self.fetchPageLinks(prox)
                 else:
                     interimData = self.fetchPageLinks()
+            except KeyboardInterrupt:
+                exit(0)
             except:
                 pass
             self.insertIntoPageDict(interimData)

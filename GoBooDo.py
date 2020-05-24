@@ -10,6 +10,7 @@ from storeImages import StoreImages
 from makePDF import createBook
 import argparse
 from time import sleep
+from natsort import natsorted
 
 #suppress urllib3 warning
 
@@ -96,7 +97,7 @@ class  GoBooDo:
         else:
             try:
                 with open(os.path.join(self.dataPath,'obstinatePages.pkl'),'rb') as ofile:
-                    self.pageList = pickle.load(ofile)
+                    self.pageList = natsorted(pickle.load(ofile))
                 with open(os.path.join(self.dataPath,'pageLinkDict.pkl'),'rb') as ofile:
                     self.pageLinkDict = pickle.load(ofile)
                 print(f'An earlier download attempt was detected, GoBooDo will continue using the previous state.')

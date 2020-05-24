@@ -34,12 +34,17 @@ class  GoBooDo:
         self.pageList = []
         self.lastCheckedPage = ""
         self.obstinatePages = []
-        self.path = os.path.join(os.getcwd(),id_)
+        # make paths
+        cwd = os.getcwd()
+        ids_path = os.path.join(cwd, "ids")
+        self.path = os.path.join(ids_path,id_)
         self.dataPath = os.path.join(self.path,'data')
         self.found = False
         if os.path.isdir(self.dataPath):
             self.found = True
+            print('found the path')
         else:
+            print('didnt find the path')
             os.mkdir(self.path)
             os.mkdir(self.dataPath)
         with open('proxies.txt','r') as ofile:

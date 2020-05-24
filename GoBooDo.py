@@ -26,15 +26,15 @@ with open('settings.json') as ofile:
     settings = json.load(ofile)
 
 class  GoBooDo:
-    def __init__(self,id,):
-        self.id = id
+    def __init__(self,id_,):
+        self.id = id_
         self.country = settings['country']
         self.resethead()
         self.pageLinkDict = {}
         self.pageList = []
         self.lastCheckedPage = ""
         self.obstinatePages = []
-        self.path = os.path.join(os.getcwd(),id)
+        self.path = os.path.join(os.getcwd(),id_)
         self.dataPath = os.path.join(self.path,'data')
         self.found = False
         if os.path.isdir(self.dataPath):

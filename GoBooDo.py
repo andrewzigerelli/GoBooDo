@@ -42,9 +42,7 @@ class  GoBooDo:
         self.found = False
         if os.path.isdir(self.dataPath):
             self.found = True
-            print('found the path')
         else:
-            print('didnt find the path')
             os.mkdir(self.path)
             os.mkdir(self.dataPath)
         with open('proxies.txt','r') as ofile:
